@@ -1,0 +1,40 @@
+.contentsPanel {
+    width: 50%;
+    height: 100%;
+
+    position: relative;
+}
+
+.addTopicToReview_button {
+    height: 1.2rem;
+    aspect-ratio: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: absolute;
+    bottom: var(--M);
+    right: var(--M);
+
+    background-color: hsla(0, 0%, 0%, .05);
+
+    vertical-align: middle;
+
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px hsla(0, 0%, 0%, .2);
+
+    transition: scale .25s ease-in-out;
+    scale: 1;
+}
+
+.addTopicToReview_button:hover {
+    cursor: pointer;
+
+    scale: 1.15;
+}
+
+.addTopicToReview_button__icon {
+    height: 65%;
+    width: 65%;
+}

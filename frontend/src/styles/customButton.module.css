@@ -1,0 +1,39 @@
+.custom_button {
+    padding: var(--S);
+
+    background-color: #DDD;
+    display: flex;
+    align-items: center;
+
+    font-weight: 600;
+    color: whitesmoke;
+
+    border-radius: var(--BORDER-RAD-1);
+    user-select: none;
+    
+    transition: scale .2s ease-in-out;
+    scale: 1.0;
+}
+
+.custom_button:hover {
+    scale: 1.07;
+
+    cursor: pointer;
+}
+
+.create_button {
+    background-color: #77dd77;
+
+    box-shadow: 0 var(--XS) 8px 1px hsl(120, 40%, 47%, .5);
+}
+
+.edit_button {
+    background-color: #7797dd;
+
+    box-shadow: 0 var(--XS) 8px 1px hsla(221, 60%, 67%, 0.5);
+}
+
+/* ---  */
+.button_icon {
+    margin-right: var(--XS);
+}

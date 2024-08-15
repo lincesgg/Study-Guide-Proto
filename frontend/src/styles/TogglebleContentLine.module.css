@@ -1,0 +1,15 @@
+.toggleble_content_line__icon {
+    width: var(--M);
+    aspect-ratio: 1;
+    margin-right: var(--XXS);
+
+    transition: scale .25s ease-in-out;
+    scale: 1.0;
+}
+
+.toggleble_content_line__icon:hover {
+    cursor: pointer;
+
+    transition: scale .1s ease-in-out;
+    scale: 1.1;
+}

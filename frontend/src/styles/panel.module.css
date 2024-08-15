@@ -1,0 +1,29 @@
+.panel {
+    padding: var(--L);  
+
+    text-align: center;
+    letter-spacing: var(--XXS);
+
+    border-radius: var(--BORDER-RAD-1);
+    box-shadow: 0 5px 7px 1px hsla(0, 0%, 0%, .4);
+}
+
+.headed_panel {
+    padding-top: unset;
+}
+
+.panel__header {
+    height: var(--XL);
+    min-height: 10%;
+    margin-bottom: var(--M);
+    margin-inline: calc(-1 * var(--L));
+    
+    position: sticky;
+    top: 0;
+
+    background-color: hsla(0, 0%, 0%, .025);
+
+    border-top-left-radius: var(--BORDER-RAD-1);
+    border-top-right-radius: var(--BORDER-RAD-1);
+
+}

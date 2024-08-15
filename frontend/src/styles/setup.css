@@ -1,0 +1,80 @@
+/* Importings */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+/* Reset Css --- */
+
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+* {
+	box-sizing: border-box;
+
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+button {
+	background-color: transparent;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* End Reset Css --- */
+
+:root {
+    --XXS: .1rem;
+    --XS: .2rem;
+    --S: .4rem;
+    --M: .8rem;
+    --XM: 1rem;
+    --L: 1.2rem;
+    --XL: 2rem;
+    --XXL: 4rem;
+
+    --BORDER-RAD-0: 10px;
+    --BORDER-RAD-1: 16px;
+
+	--NUNITO: "Nunito", sans-serif;	
+}
+
+body {
+    width: 100dvw;
+    height: 100dvh;
+
+	padding: var(--L);
+
+	font-family: var(--NUNITO);
+}
+
+#reactRoot {
+	width: 100%;
+	height: 100%;
+}

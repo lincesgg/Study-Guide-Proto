@@ -1,0 +1,150 @@
+.content_props_panel__container {
+    width: 100%;
+    height: auto;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content_props_panel {
+    width: 90%;
+    min-height: 70%;
+    max-height: 90%;
+    margin-inline: auto;
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+
+    overflow-y: scroll;
+}
+
+.content_props_panel fieldset+fieldset{
+    margin-top: var(--XL);
+}
+
+.content_props_panel fieldset{
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.content_props_panel label{
+    display: inline-block; 
+
+    font-weight: 700;
+}
+
+/* .content_props_panel label+*{
+    margin-left: var(--M);
+} */
+
+.content_props_panel :where(input, textarea){
+    width: 99%;
+    padding: var(--XS);
+    border: 1px dashed hsla(0, 0%, 0%, .2);
+    margin-left: auto;
+
+    border-radius: var(--BORDER-RAD-0);
+
+    resize: none;
+}
+
+.content_props_panel textarea{
+    min-height: 1.65rem;
+    height: min-content;
+    max-height: 15rem;
+
+    resize: vertical;
+}
+
+
+.create_button {
+    margin-left: auto;
+    margin-top: var(--L);
+}
+
+.closeButton {
+    width: min-content;
+
+    margin-left: auto;
+    margin-right: var(--S);
+
+    font-weight: 800;
+    text-align: right;
+
+    cursor: pointer;
+    user-select: none;
+
+    transition: scale 0.2s ease-in-out;
+    scale: 1;
+}
+
+.closeButton:hover {
+    scale: 1.15;
+}
+
+
+
+.date_input_collection_container {
+    max-width: 100%;
+    padding: var(--S);
+
+    display: flex;
+    flex-flow: row wrap;
+    gap: 1.7rem;
+}
+
+.date_input_container {
+    display: flex;
+    flex-flow: row nowrap;
+    flex-grow: 1;
+
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.date__button {
+    width: min-content;
+    aspect-ratio: 1;
+
+    background-color: hsla(0, 0%, 0%, .065);
+
+    border-radius: 50%;
+    box-shadow: 0 2px 2px 1px hsla(0, 0%, 0%, .2);
+    user-select: none;
+
+    transition: scale .2s ease-in-out, font-weight .2s ease-in-out;
+    scale: 1;
+}
+
+.date__button:hover {
+    font-weight: 700;
+
+    scale: 1.15;
+    cursor: pointer;
+}
+
+.date__button:active {
+    scale: 1.25;
+}
+
+.add_date__button {
+    margin: var(--S);
+    margin-top: var(--L);
+    margin-left: auto;
+
+    font-size: var(--M);
+}
+
+.remove_date__button {
+    height: var(--L);
+    width: auto;
+    margin-right: .6rem;
+
+    color: white;
+
+    background-color: #FF6961;
+    box-shadow: 0 2px 5px 1px hsla(3, 100%, 69%, .1);
+}
