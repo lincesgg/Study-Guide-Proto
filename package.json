@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:vite": "vite frontend/"
+    "dev:vite": "vite frontend/",
+    "dev:electron": "electron-vite dev frontend/",
+    "build:electron": "electron-vite build frontend/"
   },
   "keywords": [],
   "author": "",
@@ -12,6 +14,10 @@
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.1",
     "chart.js": "^4.4.3",
+    "chartjs-adapter-luxon": "^1.3.1",
+    "chartjs-adapter-moment": "^1.0.1",
+    "luxon": "^3.5.0",
+    "prototype": "file:",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
@@ -19,5 +25,8 @@
     "react-toastify": "^10.0.5",
     "uuid": "^10.0.0",
     "vite": "^5.4.0"
+  },
+  "devDependencies": {
+    "electron-vite": "^2.3.0"
   }
 }
