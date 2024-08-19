@@ -1,10 +1,13 @@
 import TogglebleContentLine from "../components/TogglebleContentLine";
+import { forgetPercentageBasedOnReviewAmount } from "./utils/forgettingMath";
 
 export
 function createContent(name, description, parentContent, subContents, reviewDates, id) {
-    // If Arguments Are Invalid return {}
+
+    // If Arguments Invalid, Throw Err
     for (const arg of arguments) {
-        if (arg == undefined) throw Error("ALL Parameter of createContent MUST BE != undefined!");
+        if (arg == undefined) 
+            throw Error("ALL Parameter of createContent MUST BE != undefined!");
     }
 
     // --- 
@@ -15,9 +18,28 @@ function createContent(name, description, parentContent, subContents, reviewDate
         subContents,
         parentContent,
         
-        studyreviewDates: reviewDates
-    }
+        _studyreviewDates: [],
+        set studyreviewDates(newVal) {
+            this._studyreviewDates = newVal
 
+            // Update memoryPercentage --
+            const lastReviewDate = new Date(content.studyreviewDates.slice(-1))
+            
+            const dayInMs = 1000 * 60 * 60 * 24
+            const timeSinceLastReviewMs = Date.now() - lastReviewDate
+            const daysSinceLastReviewMinutes = timeSinceLastReviewMs / dayInMs
+        
+            this.memoryPercentage = forgetPercentageBasedOnReviewAmount(daysSinceLastReviewMinutes, this.studyreviewDates.length).toFixed(2)
+        },
+        get studyreviewDates() {
+            return this._studyreviewDates
+        },
+        
+        memoryPercentage: 0
+    }
+    content.studyreviewDates = reviewDates
+
+    // ---
     function getRepresentation() {
         return `${content.name} ${("name" in content.parentContent) ? " ← "+content.parentContent.getRepresentation() : ""}`
     }
@@ -35,6 +57,7 @@ function createContent(name, description, parentContent, subContents, reviewDate
         )
     }
   
+    // ---
     content = Object.assign(content, {renderAsToggleble, getRepresentation})
 
     if ("subContents" in parentContent) {

@@ -83,12 +83,19 @@ const ContentPropsPanel = ({className="", closePanel, contentsList={}, saveConte
     }
 
     
-    for (const prop of ["name", "description", "reviewDates", "parentContent"]) {
+    for (const prop of ["name", "description", "parentContent"]) {
       setContentList(prev => {
         prev[crrContent.current.id][prop] = formsContentProps[prop]
+        console.log(prev[crrContent.current.id])
         return {...prev}
       })
     }
+
+    setContentList(prev => {
+      prev[crrContent.current.id].studyreviewDates = formsContentProps["reviewDates"]
+      console.log(prev[crrContent.current.id])
+      return {...prev}
+    })
 
     toast.success("Content Edited!", {
       position: "top-right",
