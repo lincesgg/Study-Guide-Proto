@@ -18,8 +18,8 @@
     margin-bottom: var(--M);
     margin-inline: calc(-1 * var(--L));
     
-    position: sticky;
-    top: 0;
+    /* position: sticky;
+    top: 0; */
 
     background-color: hsla(0, 0%, 0%, .025);
 

@@ -1,3 +1,24 @@
+.main__page_container {
+    width: 100%;
+    height: 100%;
+    
+    display: flex;
+    flex-flow: row;
+    gap: var(--M);
+    justify-content: space-between;
+}
+
+/* .main__page_container>*:last-child {
+    margin-right: calc(-1 * var(--M));
+    background-color: red;
+} */
+
+
+
+
+
+
+
 #contentForms {
     position: fixed;
     top: 0;
