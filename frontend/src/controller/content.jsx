@@ -16,7 +16,25 @@ function createContent(name, description, parentContent, subContents, reviewDate
         name,
         description,
         subContents,
-        parentContent,
+
+        _parentContent: {},
+        set parentContent(newParentContent) {
+            if (newParentContent == this.parentContent) return
+            
+            if (("subContents" in this.parentContent)) {
+                this.parentContent.subContents.splice(this._parentContent.indexOf(this), 1)
+            }
+
+            this._parentContent = newParentContent
+            
+            if (!("subContents" in this.parentContent)) return
+            if (this.parentContent.subContents.includes(content)) return
+            
+            this.parentContent.subContents.push(content)
+        },
+        get parentContent() {
+            return this._parentContent
+        },
         
         _studyreviewDates: [],
         set studyreviewDates(newVal) {
@@ -38,6 +56,7 @@ function createContent(name, description, parentContent, subContents, reviewDate
         memoryPercentage: 0
     }
     content.studyreviewDates = reviewDates
+    content.parentContent = parentContent
 
     // ---
     function getRepresentation() {
@@ -46,7 +65,7 @@ function createContent(name, description, parentContent, subContents, reviewDate
 
     function renderAsToggleble(firstRendered=false, onContentInformationRequired, tabMargin="var(--L)") {
         return (
-            <TogglebleContentLine content={content.name} key={`togglebleContentLine${content.id}`}
+            <TogglebleContentLine content={content.name} key={`togglebleContentLine__${content.id}`}
             onContentInformationRequired={() => onContentInformationRequired(content)}
             style={firstRendered? {marginLeft:"0"} : {marginLeft:tabMargin}}
             >
@@ -60,11 +79,8 @@ function createContent(name, description, parentContent, subContents, reviewDate
     // ---
     content = Object.assign(content, {renderAsToggleble, getRepresentation})
 
-    if ("subContents" in parentContent) {
-        parentContent.subContents.push(content)
-    }
-
     subContents.forEach(subContent => {
+        // if (!subContent) return
         subContent.parentContent = content
     })
 
