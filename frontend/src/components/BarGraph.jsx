@@ -50,10 +50,10 @@ const BarGraph = ({className="", style, title="", labels=[], datasets}) => {
                     maxRotation: 10,
                     mirror: true,
                     labelOffset: -6,
-                    crossAlign: "far",
+                    crossAlign: "near",
                     z:1,
                     font: {
-                        size: 7,
+                        size: 8,
                         family: "'Nunito', sans-serif"
                     }
                 }
