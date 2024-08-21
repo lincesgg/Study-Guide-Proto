@@ -61,8 +61,7 @@ const ContentPropsPanel = ({className="", closePanel, contentsList={}, saveConte
       }
     }
 
-    // TODO Further More Add Possibility to Add More Dates At Once]
-    const createdContent = saveContent(formsData["name"], formsData["description"], formsData["parentContent"], [], formsData["reviewDates"]) 
+    saveContent(formsData["name"], formsData["description"], formsData["parentContent"], [], formsData["reviewDates"]) 
 
     toast.success("Content Created !", {
       autoClose: 500,
@@ -80,20 +79,18 @@ const ContentPropsPanel = ({className="", closePanel, contentsList={}, saveConte
     formsContentProps.parentContent = getContentById(formsContentProps.parentContentID)
     if (formsContentProps.parentContent == undefined) {
         emitError("Invalid parentContentID")
+        return
     }
 
-    
     for (const prop of ["name", "description", "parentContent"]) {
       setContentList(prev => {
         prev[crrContent.current.id][prop] = formsContentProps[prop]
-        console.log(prev[crrContent.current.id])
         return {...prev}
       })
     }
 
     setContentList(prev => {
       prev[crrContent.current.id].studyreviewDates = formsContentProps["reviewDates"]
-      console.log(prev[crrContent.current.id])
       return {...prev}
     })
 
