@@ -25,6 +25,7 @@ import {most_forgeted_contents_panels} from "./styles/mostForgetedContentPanel.m
 
 import {createContent, emptyContent} from "./controller/content.jsx"
 import { forgetPercentageBasedOnReviewAmount, howManyDaysToForgetInFunctionOfRevisionsAmount } from "./controller/utils/forgettingMath.js";
+import { FcSerialTasks } from "react-icons/fc";
 
 
 // Open Forms
@@ -44,7 +45,8 @@ function Main() {
     const eventManager = useState(createEventEmitter())[0];
 
     const [savedContents, setSavedContents] = useState({})
-    const [rootContent, setRootContent] = useState({})
+    // const [rootContent, setRootContent] = useState({})
+    const rootContent = useRef({})
     
     
 
@@ -83,10 +85,17 @@ function Main() {
             return {...prev}
         })
 
+
     }
 
     function saveContent(name, description, parentContent, subContents, reviewDates) {
         const newContentId = newUUID()
+
+        const isParentAContent = ("id" in parentContent && "parentContent" in parentContent)
+        if (!isParentAContent && Object.keys(rootContent.current).length != 0){
+            throw Error("Tried to Create content With No Parent Content, but ONLY root can have no parentContent and ROOT alredy Exists!")
+        }
+
 
         const createdContent = createContent(name, description, parentContent, subContents, reviewDates, newContentId)
         append2SavedContents(createdContent, newContentId)
@@ -94,6 +103,59 @@ function Main() {
         return createdContent
     }
 
+    // ---
+    //FIXME root should not be save
+    function serializeSavedContents(contents) {
+        const {[rootContent.current.id]:root, ...contentsToSerialize} = {...contents}
+
+        for (const contentId in contentsToSerialize) {
+            const content = {...contentsToSerialize[contentId]}
+
+            const contentToSerialize = {
+                name: content.name,
+                description: content.description,
+                id: content.id,
+                studyreviewDates: content.studyreviewDates,
+                subContentsIDs: content.subContents.map(subContent => subContent.id),
+                parentContentID : content.parentContent == rootContent.current ? "ROOT" : content.parentContent?.id,
+                // parentContentID : content.parentContent == rootContent.current || !content.parentContent?.id ? "ROOT" : content.parentContent?.id,
+
+            }
+            contentsToSerialize[contentId] = contentToSerialize
+    
+        }
+
+        // "" for garantee that a string will be send, same if contentsToSerialize is undefined
+        const serializedContents = JSON.stringify(contentsToSerialize, null, 4)
+        return (!serializedContents || serializedContents == "{}") ? "" : serializedContents
+    }
+
+    function deserializeSavedContents(contentsToSerialize) {
+        const JsonDeserializedContents = JSON.parse(contentsToSerialize);
+        const deserializedContents = JSON.parse(contentsToSerialize);
+
+        for (const contentId in deserializedContents) {
+            const content = deserializedContents[contentId]
+
+            deserializedContents[contentId] = createContent(content.name, content.description, content.parentContent ?? {}, content.subContents ?? [], content.studyreviewDates ?? [], content.id)
+        }
+
+        // Stablish relation Between Content ONLY after all content Was deserialized into Content Objects
+        for (const contentId in deserializedContents) {
+            const deserializedContent = deserializedContents[contentId]
+            const serializedContent = JsonDeserializedContents[contentId]
+
+            if (serializedContent.parentContentID == "ROOT")
+                deserializedContent.parentContent = rootContent.current
+            else
+                deserializedContent.parentContent = deserializedContents[serializedContent.parentContentID]
+
+            deserializedContent.subContents = serializedContent.subContentsIDs.map(subContentId => deserializedContents[subContentId])
+        }
+
+        return deserializedContents
+        
+    }
 
     // Handling Forms ---
     const initCloseFormsOnEscPressed = () => {
@@ -146,31 +208,43 @@ function Main() {
         // openContentFormsEmpty()
         setFormsVisibility(false)
 
-        const rootContent = saveContent("root", "", {}, [], [""])
-        setRootContent(rootContent)
+        const crrRootContent = saveContent("root", "", {}, [], [""])
+        rootContent.current = crrRootContent;
 
-        const K = saveContent("Campos Elétricos", "Voaz", {}, [], ["2024-08-13"])
-        const C = saveContent("Circuitos", "Voaz", {}, [], ["2024-07-13"])
-        const B = saveContent("Eletroestatica", "Voaz", rootContent, [K, C], ["2024-07-13", "2024-08-17", "2024-08-02"])
-        const W = saveContent("aaaa", "Voaz", rootContent, [], ["2024-08-18"])
-        const Y = saveContent("kkkk", "Voaz", rootContent, [], ["2024-08-13", "2024-10-02", "2023-12-27"])
+        (async () => {
+            const savedSerializedContentsOnOS = await window.electronAPI.getSavedContent()
+            
+            try {
+                const savedContentsOnOS = deserializeSavedContents(savedSerializedContentsOnOS)
+                setSavedContents(prev => {
+                    return {[rootContent.current.id]:rootContent.current, ...savedContentsOnOS}
+                })
+            }
+            catch (err) {
+                console.error(`Error on Data Deserialization: ${err}`)
+            }
 
-        console.log(savedContents)
 
+
+            // const B = saveContent("Eletroestatica", "Voaz", rootContent.current, [], ["2024-07-13", "2024-08-17", "2024-08-02"])
+            // const K = saveContent("Campos Elétricos", "Voaz", B, [], ["2024-08-13"])
+            // const C = saveContent("Circuitos", "Voaz", B, [], ["2024-07-13"])
+            // const W = saveContent("aaaa", "Voaz", rootContent.current, [], ["2024-08-18"])
+            // const Y = saveContent("kkkk", "Voaz", rootContent.current, [], ["2024-08-13", "2024-10-02", "2023-12-27"])
+        })();
 
     }, [])
 
 
+    // ---
     const {[rootContent.id]:root, ...validCOntents} = savedContents
     const leastToMostMemoryContents = Object.values(validCOntents).toSorted(({memoryPercentage: aMemPercentage}, {memoryPercentage: bMemPercentage}) => {
         // Target: Descrescent Order
         return aMemPercentage - bMemPercentage
     })
-    console.log(leastToMostMemoryContents)
 
     const contentsToRender = leastToMostMemoryContents.slice(0, 5)
     
-    console.log("UPDATED")
     const datasetsLabels = contentsToRender.map(content => content.name)
     const datasetsData = {}
     datasetsData.memoryPercentage = {}
@@ -183,71 +257,15 @@ function Main() {
         const reviewAmount = content.studyreviewDates.length
         return howManyDaysToForgetInFunctionOfRevisionsAmount(reviewAmount)
     })
-    
-    
-    // let sortedReviewDatesToRender = []
-    // contentsToRender.forEach(({studyreviewDates}) => {
-    //     console.log(studyreviewDates)
-    //     for (const strDate of studyreviewDates) {
-    //         const date = new Date(strDate)
-
-    //         if (date == "" || sortedReviewDatesToRender.includes(date))
-    //             continue
-    //         else
-    //             sortedReviewDatesToRender.push(date)
-    //     }
-    // })
-    // sortedReviewDatesToRender.push(Date.now())
-    // sortedReviewDatesToRender.sort((b, a) => a - b)
-    
 
 
-    // const contentMemoryPercentageAtEachReviewDate = []
-    // // Key Dates 
-    // //  = Content's own and other review dates
-    // //  = If At other's review Date, memory became 0, then Day That Memory Became 0
-    // //  = Today
-    // const contentsMemoryPercentageOnKeyDates = []
-    // for (const contentToRenderIdx in contentsToRender) {
-    //     // contentMemoryPercentageAtEachReviewDate.push([])
-    //     contentsMemoryPercentageOnKeyDates.push([])
-    //     const nextContentToRender = contentsToRender[contentToRenderIdx]
-    //     const reviewsDatesAsObj = nextContentToRender.studyreviewDates.map(dateStr => new Date(dateStr))
-
-
-    //     for (const crrDateToRender of sortedReviewDatesToRender) {
-
-    //         // Identify The First Review Date Before crrDateToRenderStr for each Content
-    //         // & Quantify time passed since crrDateToRenderStr
-    //         // & and Review AMount at that point
-    //         let daysSinceCrrDateToRender = -1
-    //         let reviewAmountAtCrrDateToRender = 0
-
-    //         for (const crrContentReviewDateIdx in reviewsDatesAsObj) {
-
-    //             const crrContentReviewDate = reviewsDatesAsObj[crrContentReviewDateIdx]
-    //             const timeSinceDateInProcess = crrDateToRender - crrContentReviewDate
-
-    //             if (timeSinceDateInProcess < 0)
-    //                 break
-
-    //             else {
-    //                 const dayInMs = 1000 * 60 * 60 * 24
-    //                 daysSinceCrrDateToRender = timeSinceDateInProcess / (dayInMs)
-    //                 reviewAmountAtCrrDateToRender = parseInt(crrContentReviewDateIdx) + 1
-    //             }
-    //         }
-
-    //         // ---
-    //         const memoryPercentageAtDateInProcess = daysSinceCrrDateToRender < 0 ? -100 : forgetPercentageBasedOnReviewAmount(daysSinceCrrDateToRender, reviewAmountAtCrrDateToRender)
-    //         // contentMemoryPercentageAtEachReviewDate[contentToRenderIdx].push(memoryPercentageAtDateInProcess)
-    //         contentsMemoryPercentageOnKeyDates[contentToRenderIdx].push({x:crrDateToRender, y:memoryPercentageAtDateInProcess})
-    //     }
-    //     // console.log(contentsMemoryPercentageOnKeyDates)
-    // }
-
-
-
+    // ---
+    useEffect(() => {
+        const serializedContent = serializeSavedContents(savedContents)
+        if (saveContent.length > 0) {
+            window.electronAPI.saveContent(serializedContent)
+        }
+    }, [savedContents])
 
 
 
@@ -267,7 +285,7 @@ function Main() {
 
         <HeadedPanel className={contentsPanel} title="Review" style={{marginLeft:"calc(-1 * var(--M))"}}>
             <div className="content_Panel__content_container">
-            {("renderAsToggleble" in rootContent) ? rootContent.renderAsToggleble(true, renderFormsAsEditForms) : ""}
+            {("renderAsToggleble" in rootContent.current) ? rootContent.current.renderAsToggleble(true, renderFormsAsEditForms) : ""}
             </div>
             <button className={addTopicToReview_button} onClick={renderFormsAsCreationForms}><LuCopyPlus className={addTopicToReview_button__icon}/></button>
         </HeadedPanel>
@@ -280,15 +298,6 @@ function Main() {
                 style={{width:"100%", height:"100%"}}
             />
         </Panel>
-
-            {/* <LineGraph
-            graphTitle="Most Forgeted Contents"
-            datasetsData={contentsMemoryPercentageOnKeyDates}
-            // xLabels={sortedReviewDatesToRender}
-            // datasetsYLabels={contentMemoryPercentageAtEachReviewDate}
-            datasetsTitles={contentsToRender.map(content => content.name)}
-            /> */}
-
 
         <ToastContainer/>
     </div>
