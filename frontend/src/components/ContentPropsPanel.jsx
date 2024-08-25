@@ -6,12 +6,13 @@ import emitError from '../utils/emitError.js'
 import Panel from "./Panel.jsx"
 import CreateButton from './createButton.jsx'
 import EditButton from "./EditButton.jsx"
+import DeleteButton from './deleteButton.jsx'
 
 import { createContent, emptyContent } from '../controller/content.jsx'
 
-import {content_props_panel, content_props_panel__container, create_button, closeButton, date__button, add_date__button, date_input_container, remove_date__button, date_input_collection_container} from "../styles/contentPropsPanel.module.css"
+import {content_props_panel, content_props_panel__container, content_forms__action_button, closeButton, date__button, add_date__button, date_input_container, remove_date__button, date_input_collection_container} from "../styles/contentPropsPanel.module.css"
 
-const ContentPropsPanel = ({className="", closePanel, contentsList={}, saveContent, eventManager, setContentList, crrContent, getContentById, ...props}) => {
+const ContentPropsPanel = ({className="", closePanel, contentsList={}, setContentList, saveContent, eventManager, crrContent, getContentById, ...props}) => {
 
   // ---
   const [dateInputsContent, setDateInputsContent] = useState(['']);
@@ -82,6 +83,11 @@ const ContentPropsPanel = ({className="", closePanel, contentsList={}, saveConte
         return
     }
 
+    if (formsContentProps.parentContent?.id === crrContent.current.id) {
+      emitError("A Content's Parent Cannot be the Content Itself!")
+      return
+    }
+
     for (const prop of ["name", "description", "parentContent"]) {
       setContentList(prev => {
         prev[crrContent.current.id][prop] = formsContentProps[prop]
@@ -101,6 +107,15 @@ const ContentPropsPanel = ({className="", closePanel, contentsList={}, saveConte
       closeOnClick:true
     }) 
 
+  }
+
+  function deleteContent() {
+    setContentList(prev => {
+      crrContent.current.deleteContentRelations()
+      delete prev[crrContent.current.id]
+      return {...prev}
+    })
+    closePanel()
   }
 
   function fillFormsWContentData(content) {
@@ -173,9 +188,15 @@ const ContentPropsPanel = ({className="", closePanel, contentsList={}, saveConte
 
         {
          crrContent.type == "inCreation" ?
-         <CreateButton className={create_button} onClick={saveContentDescribedOnForms}/>
+         <CreateButton className={content_forms__action_button} onClick={saveContentDescribedOnForms}/>
          :
-         <EditButton className={create_button} onClick={updateContentRenderedAsForms}/>
+         (
+          <div style={{display:"flex", flex:"row nowrap", gap:"var(--M)", marginLeft: "auto"}}>
+            {/* // TODO Confirmation To Delete */}
+            <DeleteButton className={content_forms__action_button} onClick={deleteContent}/>
+            <EditButton className={content_forms__action_button} onClick={updateContentRenderedAsForms}/>
+          </div>
+         )
         }
 
 

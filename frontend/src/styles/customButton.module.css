@@ -33,6 +33,12 @@
     box-shadow: 0 var(--XS) 8px 1px hsla(221, 60%, 67%, 0.5);
 }
 
+.delete_button {
+    background-color: #dd7777;
+    
+    box-shadow: 0 var(--XS) 8px 1px hsla(341, 60%, 67%, 0.5);
+}
+
 /* ---  */
 .button_icon {
     margin-right: var(--XS);

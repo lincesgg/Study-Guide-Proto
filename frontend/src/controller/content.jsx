@@ -20,9 +20,13 @@ function createContent(name, description, parentContent, subContents, reviewDate
         _parentContent: {},
         set parentContent(newParentContent) {
             if (newParentContent == this.parentContent) return
+
+            if (newParentContent === this) {
+                throw Error("A Content's Parent Cannot be the Content Itself!")
+            }
             
             if (("subContents" in this.parentContent)) {
-                this.parentContent.subContents.splice(this._parentContent.indexOf(this), 1)
+                this.parentContent.subContents.splice(this.parentContent.subContents.indexOf(this), 1)
             }
 
             this._parentContent = newParentContent
@@ -59,11 +63,33 @@ function createContent(name, description, parentContent, subContents, reviewDate
     content.parentContent = parentContent
 
     // ---
+    function deleteContentRelations() {
+        content.subContents.forEach(subContent => {
+            subContent.parentContent = content.parentContent
+        })
+
+        if (("subContents" in content.parentContent)) {
+            console.log(content.parentContent)
+            content.parentContent.subContents.splice(content.parentContent.subContents.indexOf(content), 1)
+        }
+    }
+
     function getRepresentation() {
         return `${content.name} ${("name" in content.parentContent) ? " ← "+content.parentContent.getRepresentation() : ""}`
     }
 
     function renderAsToggleble(firstRendered=false, onContentInformationRequired, tabMargin="var(--L)") {
+        if (firstRendered) {
+            return (
+                <>
+                {content.subContents.map(subContent => {
+                    return subContent.renderAsToggleble(false, onContentInformationRequired, tabMargin)
+                })}
+                </>
+            )
+        }
+
+        //else
         return (
             <TogglebleContentLine content={content.name} key={`togglebleContentLine__${content.id}`}
             onContentInformationRequired={() => onContentInformationRequired(content)}
@@ -77,7 +103,7 @@ function createContent(name, description, parentContent, subContents, reviewDate
     }
   
     // ---
-    content = Object.assign(content, {renderAsToggleble, getRepresentation})
+    content = Object.assign(content, {deleteContentRelations, renderAsToggleble, getRepresentation})
 
     subContents.forEach(subContent => {
         // if (!subContent) return

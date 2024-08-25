@@ -104,7 +104,6 @@ function Main() {
     }
 
     // ---
-    //FIXME root should not be save
     function serializeSavedContents(contents) {
         const {[rootContent.current.id]:root, ...contentsToSerialize} = {...contents}
 
@@ -292,10 +291,10 @@ function Main() {
 
 
         <Panel className={most_forgeted_contents_panels} style={{height: "50%", marginRight:"calc(-1 * var(--M))"}}>
-        <BarGraph
-                labels={datasetsLabels}
-                datasets={Object.values(datasetsData)}
-                style={{width:"100%", height:"100%"}}
+            <BarGraph
+                    labels={datasetsLabels}
+                    datasets={Object.values(datasetsData)}
+                    style={{width:"100%", height:"100%"}}
             />
         </Panel>
 
